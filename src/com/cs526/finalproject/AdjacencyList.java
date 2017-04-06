@@ -34,4 +34,8 @@ public class AdjacencyList {
 		}
 		return null;
 	}
+	
+	public void addVertex(Vertex v) {
+		list.add(v);
+	}
 }
