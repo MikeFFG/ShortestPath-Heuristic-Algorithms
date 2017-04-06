@@ -36,7 +36,7 @@ public class heuristicShortestPath {
 			System.out.println(graph.findVertex("J").getDirectDistanceToZ());
 		}
 		
-//		algorithmOne();
+		algorithmOne(startNode);
 //		algorithmTwo(graph);
 	}
 	
@@ -44,8 +44,13 @@ public class heuristicShortestPath {
 	 * Algorithm 1: Among all nodes v that are adjacent to the node n, choose the one with 
 	 * the smallest dd(v). 
 	 */
-	public static void algorithmOne() {
+	public static void algorithmOne(String start) {
+		// Start
+		Vertex currentNode = graph.findVertex(start);
 		
+		while (!currentNode.equals(END_NODE)) {
+			
+		}
 	}
 	
 	/**
