@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,7 +31,12 @@ public class heuristicShortestPath {
 		// Set the edge weights for the graph from directDistances
 		setEdgeWeights(graph, directDistances);
 		
-		algorithmOne();
+		// Test
+		for (int i = 0; i < graph.numVertices(); i++) {
+			System.out.println(graph.findVertex("J").getDirectDistanceToZ());
+		}
+		
+//		algorithmOne();
 //		algorithmTwo(graph);
 	}
 	
@@ -52,6 +58,8 @@ public class heuristicShortestPath {
 	
 	private static void setEdgeWeights(AdjacencyList list, Map<String, Integer> distances) {
 		if (list.numVertices() != distances.size()) {
+			System.out.println("List numvertices = " + list.numVertices());
+			System.out.println("Distances.size() = " + distances.size());
 			throw new IllegalArgumentException("The data does not match.");
 		}
 		
@@ -66,17 +74,17 @@ public class heuristicShortestPath {
 		FileReader fr = null;
 		
 		try {
-			fr = new FileReader("distance.txt");
+			fr = new FileReader(filePath);
 			br = new BufferedReader(fr);
 			String currentLine;
-			ArrayList<ArrayList<String>> dataStore = new ArrayList<>();
+			List<String[]> dataStore = new ArrayList<>();
 			
 			/*
 			 *  First, read each line and add as an entry into dataStore
 			 *  Using an ArrayList of ArrayList<String> for ease of handling
 			 */
 			while ((currentLine = br.readLine()) != null) {
-				dataStore.add((ArrayList<String>) Arrays.asList(currentLine.split(" ")));
+				dataStore.add((String[])currentLine.split("\\s+"));
 			}
 			
 			// Then iterate through entries and create AdjacencyList
@@ -85,22 +93,27 @@ public class heuristicShortestPath {
 				 *  Because of the format of the input file, the first line will be shorter than the rest.
 				 *  So here we are adding one element at the front of line 1
 				 */
-				if (i == 0) { 
-					dataStore.get(0).add(0, "_");
+				if (i == 0) {
+					String[] tempArray = new String[dataStore.get(0).length + 1];
+					tempArray[0] = "_";
+					for (int j = 1; j < tempArray.length; j++) {
+						tempArray[j] = dataStore.get(0)[j-1];
+					}
+					dataStore.set(0, tempArray);
 					continue; 
 				}
 				
 				Vertex v = null;
-				for (int j = 0; j < dataStore.get(i).size(); j++) {
+				for (int j = 0; j < dataStore.get(i).length; j++) {
 					if (j == 0) {
-						v = new Vertex(dataStore.get(i).get(0));			// Create new vertex with name of row
+						v = new Vertex(dataStore.get(i)[0]);			// Create new vertex with name of row
 						continue;
 					}
-					if (Integer.parseInt(dataStore.get(i).get(j)) != 0) {
+					if (Integer.parseInt(dataStore.get(i)[j]) != 0) {
 						Edge newEdge = new Edge(
 								v.getName(),
-								dataStore.get(0).get(j),
-								Integer.parseInt(dataStore.get(i).get(j))
+								dataStore.get(0)[j],
+								Integer.parseInt(dataStore.get(i)[j])
 								);
 						v.addNewEdge(newEdge);
 					}

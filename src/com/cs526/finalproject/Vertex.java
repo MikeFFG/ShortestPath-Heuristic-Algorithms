@@ -18,7 +18,7 @@ public class Vertex {
 	}
 	
 	public Vertex(String name) {
-		this(name, null);
+		this(name, new ArrayList<Edge>());
 	}
 	
 	public void setDirectDistanceToZ(int distance) {
