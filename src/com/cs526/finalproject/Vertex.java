@@ -5,17 +5,20 @@ import java.util.ArrayList;
 public class Vertex {
 	private ArrayList<Edge> edges;
 	private int directDistanceToZ;
+	private String name;
 	
-	public Vertex(ArrayList<Edge> edges, int directDistanceToZ) {
+	public Vertex(String name, ArrayList<Edge> edges, int directDistanceToZ) {
+		this.name = name;
+		this.edges = edges;
 		this.directDistanceToZ = directDistanceToZ;
-		this.edges = edges;
 	}
 	
-	public Vertex(ArrayList<Edge> edges) {
-		this.edges = edges;
+	public Vertex(String name, ArrayList<Edge> edges) {
+		this(name, edges, -1);
 	}
 	
-	public Vertex() {
+	public Vertex(String name) {
+		this(name, null);
 	}
 	
 	public void setDirectDistanceToZ(int distance) {
@@ -26,6 +29,10 @@ public class Vertex {
 		return directDistanceToZ;
 	}
 	
+	/**
+	 * Start point of edge should be Vertex.name
+	 * @param edge
+	 */
 	public void addNewEdge(Edge edge) {
 		edges.add(edge);
 	}
@@ -34,5 +41,12 @@ public class Vertex {
 		return edges;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	public int numEdges() {
+		return edges.size();
+	}
 	
 }
