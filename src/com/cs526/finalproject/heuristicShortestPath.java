@@ -14,8 +14,11 @@ import java.util.Map;
  *
  */
 public class heuristicShortestPath {
+	private static final String END_NODE = "Z";
+	
 	private static Map<String, Integer> directDistances = new HashMap<>();
 	private static AdjacencyList graph = new AdjacencyList();
+	private static String startNode = "J";
 	
 	public static void main(String[] args) {
 		// Path hardcoded to distance.txt
@@ -23,6 +26,38 @@ public class heuristicShortestPath {
 		
 		// Path set by passing in a command line arg of the path.
 		graph = readGraphFromFile(args[0]);
+		
+		// Set the edge weights for the graph from directDistances
+		setEdgeWeights(graph, directDistances);
+		
+		algorithmOne();
+//		algorithmTwo(graph);
+	}
+	
+	/**
+	 * Algorithm 1: Among all nodes v that are adjacent to the node n, choose the one with 
+	 * the smallest dd(v). 
+	 */
+	public static void algorithmOne() {
+		
+	}
+	
+	/**
+	 * Algorithm 2: Among all nodes v that are adjacent to the node n, choose the one for 
+	 * which w(n, v) + dd(v) is the smallest. 
+	 */
+	public static void algorithmTwo() {
+		
+	}
+	
+	private static void setEdgeWeights(AdjacencyList list, Map<String, Integer> distances) {
+		if (list.numVertices() != distances.size()) {
+			throw new IllegalArgumentException("The data does not match.");
+		}
+		
+		for (String name : distances.keySet()) {
+			list.findVertex(name).setDirectDistanceToZ(distances.get(name));;
+		}
 	}
 	
 	private static AdjacencyList readGraphFromFile(String filePath) {
