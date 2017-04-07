@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -230,23 +229,6 @@ public class heuristicShortestPath {
 			
 		// Then iterate through entries and create AdjacencyList
 		for (int i = 1; i < dataStore.size(); i++) {
-			/*
-			 *  Because of the format of the input file, the first line will be shorter than the rest.
-			 *  So here we are adding one element at the front of line 1. This will make it easy
-			 *  for us to correlate the columns.
-			 */
-//			if (i == 0) {
-//				
-//				String[] tempArray = new 
-//						String[dataStore.get(0).length + 1];	// Create a new slightly larger array
-//				tempArray[0] = "_";								// Add our placeholder item
-//				for (int j = 0; j < tempArray.length; j++) {	// Add all of our elements after it
-//					System.out.println(dataStore.get(0)[j]);
-//				}
-//				dataStore.set(0, tempArray);					// save our temparray to the datastore
-//				continue; 
-//			}
-			
 			Vertex v = null;										// Create new vertex for this entry
 			for (int j = 0; j < dataStore.get(i).length; j++) {		// Loop through this entry
 				/*
@@ -268,9 +250,6 @@ public class heuristicShortestPath {
 							dataStore.get(0)[j],
 							Integer.parseInt(dataStore.get(i)[j])
 							);
-//					System.out.println(v.getName());
-//					System.out.println(dataStore.get(0)[j]);
-//					System.out.println(Integer.parseInt(dataStore.get(i)[j]));
 					v.addNewEdge(newEdge);
 				}
 			}

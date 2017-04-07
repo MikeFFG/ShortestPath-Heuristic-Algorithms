@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdjacencyList {
-	private ArrayList<Vertex> list;
+	private List<Vertex> list;
 	
 	public AdjacencyList(int capacity) {
 		list = new ArrayList<Vertex>(capacity);
@@ -14,7 +14,7 @@ public class AdjacencyList {
 		this(26);
 	}
 	
-	public ArrayList<Vertex> getList() {
+	public List<Vertex> getList() {
 		return list;
 	}
 	
@@ -39,10 +39,7 @@ public class AdjacencyList {
 	public ArrayList<Vertex> getAdjacentNodes(Vertex v) {
 		ArrayList<Vertex> adjacentNodes = new ArrayList<>();
 		
-//		System.out.println(v.getName());
-		
 		for (Edge e : v.getEdges()) {
-//			System.out.println(e.getEnd());
 			adjacentNodes.add(findVertex(e.getEnd()));
 		}
 		
