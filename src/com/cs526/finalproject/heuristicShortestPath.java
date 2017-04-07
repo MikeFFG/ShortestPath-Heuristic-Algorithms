@@ -29,13 +29,11 @@ public class heuristicShortestPath {
 		
 		// Set the edge weights for the graph from directDistances
 		setEdgeWeights(graph, directDistances);
-		
-		// Test
-		for (int i = 0; i < graph.numVertices(); i++) {
-			System.out.println(graph.findVertex("J").getDirectDistanceToZ());
-		}
-		
+
+		// Run algorithm one
 		algorithmOne(startNode);
+		
+		// Run algorithm two
 //		algorithmTwo(graph);
 	}
 	
@@ -47,8 +45,29 @@ public class heuristicShortestPath {
 		// Start
 		Vertex currentNode = graph.findVertex(start);
 		
-		while (!currentNode.equals(END_NODE)) {
+		// Path history
+		List<Vertex> history = new ArrayList<>();
+		
+		// Temp
+		List<Vertex> neighbors;
+		
+		// Find the neighbor with the shortest distance to Z
+		while (!currentNode.getName().equals(END_NODE)) {
+			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
 			
+			Vertex withShortestDistance = neighbors.get(0);
+			for (int i = 1; i < neighbors.size(); i++) {
+				if (neighbors.get(i).getDirectDistanceToZ() < 
+						withShortestDistance.getDirectDistanceToZ()) {
+					withShortestDistance = neighbors.get(i);
+				}
+			}
+			history.add(withShortestDistance);
+			currentNode = withShortestDistance;
+		}
+		
+		for (Vertex v : history) {
+			System.out.println(v.getName());
 		}
 	}
 	
@@ -138,22 +157,23 @@ public class heuristicShortestPath {
 		}
 			
 		// Then iterate through entries and create AdjacencyList
-		for (int i = 0; i < dataStore.size(); i++) {
+		for (int i = 1; i < dataStore.size(); i++) {
 			/*
 			 *  Because of the format of the input file, the first line will be shorter than the rest.
 			 *  So here we are adding one element at the front of line 1. This will make it easy
 			 *  for us to correlate the columns.
 			 */
-			if (i == 0) {
-				String[] tempArray = new 
-						String[dataStore.get(0).length + 1];	// Create a new slightly larger array
-				tempArray[0] = "_";								// Add our placeholder item
-				for (int j = 1; j < tempArray.length; j++) {	// Add all of our elements after it
-					tempArray[j] = dataStore.get(0)[j-1];
-				}
-				dataStore.set(0, tempArray);					// save our temparray to the datastore
-				continue; 
-			}
+//			if (i == 0) {
+//				
+//				String[] tempArray = new 
+//						String[dataStore.get(0).length + 1];	// Create a new slightly larger array
+//				tempArray[0] = "_";								// Add our placeholder item
+//				for (int j = 0; j < tempArray.length; j++) {	// Add all of our elements after it
+//					System.out.println(dataStore.get(0)[j]);
+//				}
+//				dataStore.set(0, tempArray);					// save our temparray to the datastore
+//				continue; 
+//			}
 			
 			Vertex v = null;										// Create new vertex for this entry
 			for (int j = 0; j < dataStore.get(i).length; j++) {		// Loop through this entry
@@ -176,6 +196,9 @@ public class heuristicShortestPath {
 							dataStore.get(0)[j],
 							Integer.parseInt(dataStore.get(i)[j])
 							);
+//					System.out.println(v.getName());
+//					System.out.println(dataStore.get(0)[j]);
+//					System.out.println(Integer.parseInt(dataStore.get(i)[j]));
 					v.addNewEdge(newEdge);
 				}
 			}

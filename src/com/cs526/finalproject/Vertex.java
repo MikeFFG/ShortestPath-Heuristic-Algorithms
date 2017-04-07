@@ -35,6 +35,8 @@ public class Vertex {
 	 */
 	public void addNewEdge(Edge edge) {
 		edges.add(edge);
+//		System.out.println("Name = " + this.name);
+//		System.out.println(edge.getEnd());
 	}
 	
 	public ArrayList<Edge> getEdges() {

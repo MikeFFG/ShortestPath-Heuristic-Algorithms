@@ -1,6 +1,7 @@
 package com.cs526.finalproject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AdjacencyList {
 	private ArrayList<Vertex> list;
@@ -33,6 +34,19 @@ public class AdjacencyList {
 			}
 		}
 		return null;
+	}
+	
+	public ArrayList<Vertex> getAdjacentNodes(Vertex v) {
+		ArrayList<Vertex> adjacentNodes = new ArrayList<>();
+		
+//		System.out.println(v.getName());
+		
+		for (Edge e : v.getEdges()) {
+//			System.out.println(e.getEnd());
+			adjacentNodes.add(findVertex(e.getEnd()));
+		}
+		
+		return adjacentNodes;
 	}
 	
 	public void addVertex(Vertex v) {
