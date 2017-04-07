@@ -51,23 +51,47 @@ public class heuristicShortestPath {
 		// Temp
 		List<Vertex> neighbors;
 		
+		System.out.println("Algorithm 1:\n");
+		
 		// Find the neighbor with the shortest distance to Z
 		while (!currentNode.getName().equals(END_NODE)) {
+			System.out.println("\tCurrent Node = " + currentNode.getName());
+
 			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
 			
+			System.out.print("\tAdjacent nodes: ");
+			for (Vertex v : neighbors) {
+				System.out.print(v.getName() + ",");
+			}
+			System.out.println("");
+			
 			Vertex withShortestDistance = neighbors.get(0);
+			System.out.println("\t" + neighbors.get(0).getName() + ": dd(" +
+					neighbors.get(0).getName() + ") = " + 
+					neighbors.get(0).getDirectDistanceToZ()
+					);
 			for (int i = 1; i < neighbors.size(); i++) {
-				if (neighbors.get(i).getDirectDistanceToZ() < 
-						withShortestDistance.getDirectDistanceToZ()) {
-					withShortestDistance = neighbors.get(i);
+				if (history.contains(neighbors.get(i))) {
+					System.out.println("\t" + neighbors.get(i).getName() + 
+							" is already in the path.");
+				} else {
+					System.out.println("\t" + neighbors.get(i).getName() + ": dd(" +
+							neighbors.get(i).getName() + ") = " + 
+							neighbors.get(i).getDirectDistanceToZ()
+							);
+					
+					if (neighbors.get(i).getDirectDistanceToZ() < 
+							withShortestDistance.getDirectDistanceToZ()) {
+						withShortestDistance = neighbors.get(i);
+					}
 				}
 			}
+			System.out.println("\t" + withShortestDistance.getName() + " is selected");
+			System.out.println("\tShortest path: " + currentNode.getName() + 
+					" → " + withShortestDistance.getName());
 			history.add(withShortestDistance);
 			currentNode = withShortestDistance;
-		}
-		
-		for (Vertex v : history) {
-			System.out.println(v.getName());
+			System.out.println("");
 		}
 	}
 	
