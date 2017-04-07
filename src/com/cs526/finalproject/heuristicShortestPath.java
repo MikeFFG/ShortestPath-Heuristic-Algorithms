@@ -51,6 +51,7 @@ public class heuristicShortestPath {
 		// Temp
 		List<Vertex> neighbors;
 		
+		// Print title for algorithm 1
 		System.out.println("Algorithm 1:\n");
 		
 		// Find the neighbor with the shortest distance to Z
@@ -58,12 +59,7 @@ public class heuristicShortestPath {
 			System.out.println("\tCurrent Node = " + currentNode.getName());
 
 			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
-			
-			System.out.print("\tAdjacent nodes: ");
-			for (Vertex v : neighbors) {
-				System.out.print(v.getName() + ",");
-			}
-			System.out.println("");
+			printAdjacentNodes(neighbors);
 			
 			Vertex withShortestDistance = neighbors.get(0);
 			System.out.println("\t" + neighbors.get(0).getName() + ": dd(" +
@@ -93,6 +89,18 @@ public class heuristicShortestPath {
 			currentNode = withShortestDistance;
 			System.out.println("");
 		}
+	}
+	
+	public static void printAdjacentNodes(List<Vertex> neighbors) {
+		System.out.print("\tAdjacent nodes: ");
+		for (int i = 0; i < neighbors.size(); i++ ) {
+			if (i == neighbors.size() - 1) {
+				System.out.print(neighbors.get(i).getName());
+			} else {
+				System.out.print(neighbors.get(i).getName() + ", ");
+			}
+		}
+		System.out.println("");
 	}
 	
 	/**
