@@ -35,8 +35,6 @@ public class Vertex {
 	 */
 	public void addNewEdge(Edge edge) {
 		edges.add(edge);
-//		System.out.println("Name = " + this.name);
-//		System.out.println(edge.getEnd());
 	}
 	
 	public ArrayList<Edge> getEdges() {
@@ -51,13 +49,21 @@ public class Vertex {
 		return edges.size();
 	}
 	
+	public Edge findEdge(String end) {
+		for (Edge edge : edges) {
+			if (edge.getEnd().equals(end)) {
+				return edge;
+			}
+		}
+		return null;
+	}
+	
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Vertex)) { return false; }
 		
 		if (((Vertex) obj).getName().equals(name)) {
 			return true;
 		}
-		
 		return false;
 	}
 	

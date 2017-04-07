@@ -95,7 +95,14 @@ public class heuristicShortestPath {
 				System.out.print("\n\tShortest path length = ");
 				int total = 0;
 				for (int i = 0; i < history.size(); i++) {
-					System.out.println("Todo");
+					if (i != 0) {
+						int weight = history.get(i - 1).findEdge(history.get(i).getName()).getWeight();
+						total += weight;
+						System.out.print(weight);
+					}
+					if (i != history.size() - 1 && i != 0) {
+						System.out.print(" + ");
+					}
 				}
 				System.out.print(" = " + total);
 			} else {

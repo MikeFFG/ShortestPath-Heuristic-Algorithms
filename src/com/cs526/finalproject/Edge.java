@@ -22,4 +22,14 @@ public class Edge {
 	public String getEnd() {
 		return end;
 	}
+	
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Edge)) { return false; }
+		Edge otherEdge = (Edge) obj;
+		if (otherEdge.getEnd().equals(end) &&
+			otherEdge.getStart().equals(start)) {
+			return true;
+		}
+		return false;
+	}
 }
