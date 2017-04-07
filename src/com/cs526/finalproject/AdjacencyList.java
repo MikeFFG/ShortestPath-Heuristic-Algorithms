@@ -3,6 +3,10 @@ package com.cs526.finalproject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Structure to hold a graph
+ * @author mike
+ */
 public class AdjacencyList {
 	private List<Vertex> list;
 	

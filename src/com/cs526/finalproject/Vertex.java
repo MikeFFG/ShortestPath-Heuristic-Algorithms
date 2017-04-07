@@ -2,6 +2,10 @@ package com.cs526.finalproject;
 
 import java.util.ArrayList;
 
+/**
+ * Model class to hold information about a Vertex (aka node)
+ * @author mike
+ */
 public class Vertex {
 	private ArrayList<Edge> edges;
 	private int directDistanceToZ;
@@ -30,7 +34,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Start point of edge should be Vertex.name
+	 * Start point of edge is assumed to be this Vertex
 	 * @param edge
 	 */
 	public void addNewEdge(Edge edge) {
@@ -45,10 +49,19 @@ public class Vertex {
 		return name;
 	}
 	
+	/**
+	 * @return the number of edges for this vertex
+	 */
 	public int numEdges() {
 		return edges.size();
 	}
 	
+	/**
+	 * Finds an edge that starts at the current vertex
+	 * @param end - The other end of the edge (start is assumed
+	 * to be the current vertex)
+	 * @return - the edge if it is found. Null if not found
+	 */
 	public Edge findEdge(String end) {
 		for (Edge edge : edges) {
 			if (edge.getEnd().equals(end)) {
@@ -58,6 +71,10 @@ public class Vertex {
 		return null;
 	}
 	
+	/**
+	 * Overrides the standard equals method defining
+	 * equals based only on the name.
+	 */
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Vertex)) { return false; }
 		

@@ -1,5 +1,9 @@
 package com.cs526.finalproject;
 
+/**
+ * Model class to hold information about a particular edge
+ * @author mike
+ */
 public class Edge {
 	private int weight;
 	private String start;

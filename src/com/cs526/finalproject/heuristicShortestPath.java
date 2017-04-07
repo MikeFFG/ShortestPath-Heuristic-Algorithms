@@ -39,52 +39,65 @@ public class heuristicShortestPath {
 	/**
 	 * Algorithm 1: Among all nodes v that are adjacent to the node n, choose the one with 
 	 * the smallest dd(v). 
+	 * 
+	 * The algorithm itself is fairly simple. The code logic gets difficult only because
+	 * we need to keep adding print statements all over the place to get the output
+	 * to look per the specifications.
 	 */
 	public static void algorithmOne(String start) {
-		// Start
+		// Start Node
 		Vertex currentNode = graph.findVertex(start);
 		
 		// Path history
 		List<Vertex> history = new ArrayList<>();
 		
-		// Temp
+		// Neighbors List
 		List<Vertex> neighbors;
 		
+		// Shortest Distance Node placeholder
 		Vertex withShortestDistance = null;
 		
 		// Print title for algorithm 1
 		System.out.println("Algorithm 1:\n");
 		
 		// Find the neighbor with the shortest distance to Z
-		while (!currentNode.equals(END_NODE)) {
-			System.out.println("\tCurrent Node = " + currentNode.getName());
-			history.add(currentNode);
-
+		while (!currentNode.equals(END_NODE)) {		// Until we find the END_NODE
+			history.add(currentNode);							// Add node to the history list
 			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
+
+			// Print statements
+			System.out.println("\tCurrent Node = " + 
+					currentNode.getName());
 			printAdjacentNodes(neighbors);
 			
-			withShortestDistance = neighbors.get(0);		// Set shortest to 1st neighbor 
+			withShortestDistance = neighbors.get(0);		// Set shortest to 1st neighbor
+			
+			// Iterate through all nodes in neighbors list
 			for (int i = 0; i < neighbors.size(); i++) {
-				if (isInHistoryList(history, neighbors.get(i))) {
+				if (isInHistoryList(history, neighbors.get(i))) {	// Node is in history list
 					System.out.println("\t" + neighbors.get(i).getName() + 
 							" is already in the path.");
-					continue;
-				} else if (neighbors.get(i).equals(END_NODE)){
+					continue;										// Go to next iteration
+				} else if (neighbors.get(i).equals(END_NODE)){		// We have reached the end
 					System.out.println("\tZ is the destination node. Stop.");
-					currentNode = END_NODE;
-					history.add(currentNode);
-					break;
-				} else {
-					printSingleNodeDD(neighbors.get(i));
+					currentNode = END_NODE;							// Set currentNode	
+					history.add(currentNode);						// Add to history
+					break;											// Leave loop
+				} else {											// Normal node case
+					printSingleNodeDD(neighbors.get(i));	
 					
+					// If this node is shorter, replace withShortestDistance with current
 					if (neighbors.get(i).getDirectDistanceToZ() < 
 							withShortestDistance.getDirectDistanceToZ()) {
 						withShortestDistance = neighbors.get(i);
 					}
+					
+					// Reset currentNode
 					currentNode = withShortestDistance;
 				}
 			}
 			
+			// If we reach the end, we have some further printing to do
 			if (currentNode.equals(END_NODE)) {
 				System.out.print("\tShortest Path = ");
 				for (int i = 0; i < history.size(); i++) {
@@ -114,6 +127,12 @@ public class heuristicShortestPath {
 		}
 	}
 	
+	/**
+	 * Searches history list for a specific node
+	 * @param history - the history list to search
+	 * @param node - the node to find
+	 * @return - true if we find the node. False if we don't find it.
+	 */
 	public static boolean isInHistoryList(List<Vertex> history, Vertex node) {
 		for (Vertex v : history) {
 			if (v.equals(node)) {
@@ -123,6 +142,10 @@ public class heuristicShortestPath {
 		return false;
 	}
 	
+	/**
+	 * Prints the output of a node for the DD algorithm
+	 * @param v - the node to print
+	 */
 	public static void printSingleNodeDD(Vertex v) {
 		System.out.println("\t" + v.getName() + ": dd(" +
 				v.getName() + ") = " + 
@@ -130,6 +153,10 @@ public class heuristicShortestPath {
 				);
 	}
 	
+	/**
+	 * Prints a list of nodes.
+	 * @param neighbors - the list of neighbors to print
+	 */
 	public static void printAdjacentNodes(List<Vertex> neighbors) {
 		System.out.print("\tAdjacent nodes: ");
 		for (int i = 0; i < neighbors.size(); i++ ) {
@@ -261,6 +288,10 @@ public class heuristicShortestPath {
 		return temp;
 	}
 	
+	/**
+	 * Reads "distance.txt" and loads the direct distances into a Map.
+	 * @return - a Map<String, Integer> of the direct distances
+	 */
 	private static Map<String, Integer> readDirectDistancesFromFile() {
 		Map<String, Integer> distances = new HashMap<>();
 		BufferedReader br = null;
