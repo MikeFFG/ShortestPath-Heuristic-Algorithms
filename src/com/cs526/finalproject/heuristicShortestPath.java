@@ -15,7 +15,7 @@ import java.util.Map;
  *
  */
 public class heuristicShortestPath {
-	private static final String END_NODE = "Z"; 	// End node is hardcoded								
+	private static final Vertex END_NODE = new Vertex("Z"); 	// End node is hardcoded								
 	
 	private static Map<String, Integer> directDistances = new HashMap<>();	// Holds direct distances
 	private static AdjacencyList graph = new AdjacencyList();				// Main graph data structure
@@ -51,44 +51,77 @@ public class heuristicShortestPath {
 		// Temp
 		List<Vertex> neighbors;
 		
+		Vertex withShortestDistance = null;
+		
 		// Print title for algorithm 1
 		System.out.println("Algorithm 1:\n");
 		
 		// Find the neighbor with the shortest distance to Z
-		while (!currentNode.getName().equals(END_NODE)) {
+		while (!currentNode.equals(END_NODE)) {
 			System.out.println("\tCurrent Node = " + currentNode.getName());
+			history.add(currentNode);
 
 			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
 			printAdjacentNodes(neighbors);
 			
-			Vertex withShortestDistance = neighbors.get(0);
-			System.out.println("\t" + neighbors.get(0).getName() + ": dd(" +
-					neighbors.get(0).getName() + ") = " + 
-					neighbors.get(0).getDirectDistanceToZ()
-					);
-			for (int i = 1; i < neighbors.size(); i++) {
-				if (history.contains(neighbors.get(i))) {
+			withShortestDistance = neighbors.get(0);		// Set shortest to 1st neighbor 
+			for (int i = 0; i < neighbors.size(); i++) {
+				if (isInHistoryList(history, neighbors.get(i))) {
 					System.out.println("\t" + neighbors.get(i).getName() + 
 							" is already in the path.");
+					continue;
+				} else if (neighbors.get(i).equals(END_NODE)){
+					System.out.println("\tZ is the destination node. Stop.");
+					currentNode = END_NODE;
+					history.add(currentNode);
+					break;
 				} else {
-					System.out.println("\t" + neighbors.get(i).getName() + ": dd(" +
-							neighbors.get(i).getName() + ") = " + 
-							neighbors.get(i).getDirectDistanceToZ()
-							);
+					printSingleNodeDD(neighbors.get(i));
 					
 					if (neighbors.get(i).getDirectDistanceToZ() < 
 							withShortestDistance.getDirectDistanceToZ()) {
 						withShortestDistance = neighbors.get(i);
 					}
+					currentNode = withShortestDistance;
 				}
 			}
-			System.out.println("\t" + withShortestDistance.getName() + " is selected");
-			System.out.println("\tShortest path: " + currentNode.getName() + 
-					" → " + withShortestDistance.getName());
-			history.add(withShortestDistance);
-			currentNode = withShortestDistance;
-			System.out.println("");
+			
+			if (currentNode.equals(END_NODE)) {
+				System.out.print("\tShortest Path = ");
+				for (int i = 0; i < history.size(); i++) {
+					System.out.print(history.get(i).getName());
+					if (i != history.size() - 1) { System.out.print(" → ");};
+				}
+				System.out.print("\n\tShortest path length = ");
+				int total = 0;
+				for (int i = 0; i < history.size(); i++) {
+					System.out.println("Todo");
+				}
+				System.out.print(" = " + total);
+			} else {
+				System.out.println("\t" + currentNode.getName() + " is selected");
+				System.out.println("\tShortest path: " + 
+						history.get(history.size() - 1).getName() + 
+						" → " + currentNode.getName());
+				System.out.println("");
+			}
 		}
+	}
+	
+	public static boolean isInHistoryList(List<Vertex> history, Vertex node) {
+		for (Vertex v : history) {
+			if (v.equals(node)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static void printSingleNodeDD(Vertex v) {
+		System.out.println("\t" + v.getName() + ": dd(" +
+				v.getName() + ") = " + 
+				v.getDirectDistanceToZ()
+				);
 	}
 	
 	public static void printAdjacentNodes(List<Vertex> neighbors) {
