@@ -77,11 +77,15 @@ public class Vertex {
 	 */
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Vertex)) { return false; }
-		
+
 		if (((Vertex) obj).getName().equals(name)) {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean removeNeighbor(Vertex neighbor) {
+		return edges.removeIf(e -> e.getEnd().equals(neighbor.getName()));
 	}
 	
 }

@@ -18,16 +18,23 @@ public class heuristicShortestPath {
 	
 	private static Map<String, Integer> directDistances = new HashMap<>();	// Holds direct distances
 	private static AdjacencyList graph = new AdjacencyList();				// Main graph data structure
-	private static String startNode = "J";									// Start node passed in as arg
+	private static String startNode = "H";									// Start node passed in as arg
 	
 	public static void main(String[] args) {
-		directDistances = readDirectDistancesFromFile();					// Path hardcoded to distance.txt
-		
+
 		// Path set by passing in a command line arg of the path.
-		graph = readGraphFromFile(args[0]);
-		
+		if (args.length < 1) {
+			System.out.print("Please enter the path to the input file.");
+			System.exit(0);
+		} else {
+			// Read the input file and prepare the AdjacencyList
+			graph = readGraphFromFile(args[0]);
+		}
+
+		directDistances = readDirectDistancesFromFile();					// Path hardcoded to direct_distance.txt
 		// Set the edge weights for the graph from directDistances
 		setEdgeWeights(graph, directDistances);
+
 
 		// Run algorithm one
 		algorithmOne(startNode);
@@ -45,86 +52,85 @@ public class heuristicShortestPath {
 	 * to look per the specifications.
 	 */
 	public static void algorithmOne(String start) {
-		// Start Node
-		Vertex currentNode = graph.findVertex(start);
-		
-		// Path history
-		List<Vertex> history = new ArrayList<>();
-		
-		// Neighbors List
-		List<Vertex> neighbors;
-		
-		// Shortest Distance Node placeholder
-		Vertex withShortestDistance = null;
-		
+		Vertex currentNode = graph.findVertex(start); 		// Start Node
+		List<Vertex> history = new ArrayList<>(); 			// Path history
+		List<Vertex> neighbors;								// Neighbors List
+		Vertex withShortestDistance = null;					// Shortest Distance Node placeholder
+		List<Vertex> blackList = new ArrayList<>();
+
 		// Print title for algorithm 1
 		System.out.println("Algorithm 1:\n");
-		
-		// Find the neighbor with the shortest distance to Z
+
+		/*
+		 *	Find the neighbor with the shortest distance to Z
+		 *	We loop this code until we hit the end node
+		 */
 		while (!currentNode.equals(END_NODE)) {		// Until we find the END_NODE
 			history.add(currentNode);							// Add node to the history list
 			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
+			Vertex prevNode = currentNode;						// Save previous node for later comparison
 
 			// Print statements
-			System.out.println("\tCurrent Node = " + 
-					currentNode.getName());
-			printAdjacentNodes(neighbors);
+			System.out.println("\tCurrent Node = " + currentNode.getName());
+			Utilities.printAdjacentNodes(neighbors);
 			
-			withShortestDistance = neighbors.get(0);		// Set shortest to 1st neighbor
+			// withShortestDistance = neighbors.get(0);		// Set shortest to 1st neighbor
 			
-			// Iterate through all nodes in neighbors list
-			for (int i = 0; i < neighbors.size(); i++) {
-				if (isInHistoryList(history, neighbors.get(i))) {	// Node is in history list
-					System.out.println("\t" + neighbors.get(i).getName() + 
-							" is already in the path.");
-					continue;										// Go to next iteration
-				} else if (neighbors.get(i).equals(END_NODE)){		// We have reached the end
-					System.out.println("\tZ is the destination node. Stop.");
-					currentNode = END_NODE;							// Set currentNode	
-					history.add(currentNode);						// Add to history
-					break;											// Leave loop
-				} else {											// Normal node case
-					printSingleNodeDD(neighbors.get(i));	
-					
-					// If this node is shorter, replace withShortestDistance with current
-					if (neighbors.get(i).getDirectDistanceToZ() < 
-							withShortestDistance.getDirectDistanceToZ()) {
-						withShortestDistance = neighbors.get(i);
-					}
-					
-					// Reset currentNode
-					currentNode = withShortestDistance;
-				}
-			}
-			
-			// If we reach the end, we have some further printing to do
-			if (currentNode.equals(END_NODE)) {
-				System.out.print("\tShortest Path = ");
-				for (int i = 0; i < history.size(); i++) {
-					System.out.print(history.get(i).getName());
-					if (i != history.size() - 1) { System.out.print(" → ");};
-				}
-				System.out.print("\n\tShortest path length = ");
-				int total = 0;
-				for (int i = 0; i < history.size(); i++) {
-					if (i != 0) {
-						int weight = history.get(i - 1).findEdge(history.get(i).getName()).getWeight();
-						total += weight;
-						System.out.print(weight);
-					}
-					if (i != history.size() - 1 && i != 0) {
-						System.out.print(" + ");
+			// Iterate through all nodes in neighbors list to find node with shortest distance
+			nodeLoop:
+				for (int i = 0; i < neighbors.size(); i++) {
+					if (isInBlackList(blackList, neighbors.get(i))) {
+						continue nodeLoop;
+					} else if (isInHistoryList(history, neighbors.get(i))) {	// Node is already in history list
+						System.out.println("\t" + neighbors.get(i).getName() +
+								" is already in the path.");
+						continue nodeLoop;										// Go to next iteration
+					} else if (neighbors.get(i).equals(END_NODE)){		// We have reached the end
+						System.out.println("\tZ is the destination node. Stop.");
+						currentNode = END_NODE;							// Set currentNode (to break while loop)
+						history.add(currentNode);						// Add to history
+						break nodeLoop;									// Leave for loop
+					} else {											// Normal node case
+						Utilities.printSingleNodeDD(neighbors.get(i));
+
+						if (withShortestDistance == null) {
+							withShortestDistance = neighbors.get(i);
+						} else if (neighbors.get(i).getDirectDistanceToZ() <
+								withShortestDistance.getDirectDistanceToZ()) {
+							// If this node is shorter, replace withShortestDistance with current
+							withShortestDistance = neighbors.get(i);
+						}
+
+						// Reset currentNode
+						currentNode = withShortestDistance;
 					}
 				}
-				System.out.print(" = " + total);
-			} else {
-				System.out.println("\t" + currentNode.getName() + " is selected");
-				System.out.println("\tShortest path: " + 
-						history.get(history.size() - 1).getName() + 
-						" → " + currentNode.getName());
-				System.out.println("");
+
+			if (currentNode.equals(prevNode)) { 	// This means we hit a dead end and weren't able to move on
+				System.out.println("\tDead end.");
+				System.out.println("\tBacktrack to " + history.get(history.size() - 2).getName());
+				currentNode = history.get(history.size() - 2);
+				history.remove(currentNode);
+				blackList.add(history.remove(history.size() - 1));		// Make sure we can't do this again.
+				withShortestDistance = null;
+			} else if (currentNode.equals(END_NODE)) {
+				// Print either the end of the section or end of the algorithm info
+				Utilities.printPath(history);
+				Utilities.printPathLength(history);
+			} else { 	// We haven't reached the end yet
+				Utilities.printSectionEnd(history, currentNode);
 			}
 		}
+	}
+
+
+	public static boolean isInBlackList(List<Vertex> blackList, Vertex node) {
+		for (Vertex v : blackList) {
+			if (v.equals(node)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -140,33 +146,6 @@ public class heuristicShortestPath {
 			}
 		}
 		return false;
-	}
-	
-	/**
-	 * Prints the output of a node for the DD algorithm
-	 * @param v - the node to print
-	 */
-	public static void printSingleNodeDD(Vertex v) {
-		System.out.println("\t" + v.getName() + ": dd(" +
-				v.getName() + ") = " + 
-				v.getDirectDistanceToZ()
-				);
-	}
-	
-	/**
-	 * Prints a list of nodes.
-	 * @param neighbors - the list of neighbors to print
-	 */
-	public static void printAdjacentNodes(List<Vertex> neighbors) {
-		System.out.print("\tAdjacent nodes: ");
-		for (int i = 0; i < neighbors.size(); i++ ) {
-			if (i == neighbors.size() - 1) {
-				System.out.print(neighbors.get(i).getName());
-			} else {
-				System.out.print(neighbors.get(i).getName() + ", ");
-			}
-		}
-		System.out.println("");
 	}
 	
 	/**
@@ -204,7 +183,7 @@ public class heuristicShortestPath {
 	
 	/**
 	 * This method reads in a text file of a graph representation and turns it
-	 * into an AdjacencyList. This method is highly inefficient due to 
+	 * into an AdjacencyList. This method seems pretty  inefficient due to
 	 * multiple for loops, but a specification of this project is that there are
 	 * only a maximum of 26 nodes, so the data will never get large.
 	 * @param filePath - the path to read in the graph input file
@@ -242,16 +221,7 @@ public class heuristicShortestPath {
 			e.printStackTrace();
 		} finally {
 			// Closing resources
-			try {
-				if (br != null) {
-					br.close();
-				}
-				if (fr != null) {
-					fr.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			closeResources(br, fr);
 		}
 			
 		// Then iterate through entries and create AdjacencyList
@@ -298,7 +268,7 @@ public class heuristicShortestPath {
 		FileReader fr = null;
 		
 		try {
-			fr = new FileReader("distance.txt");
+			fr = new FileReader("direct_distance.txt");
 			br = new BufferedReader(fr);
 			String currentLine;
 			
@@ -310,18 +280,22 @@ public class heuristicShortestPath {
 			e.printStackTrace();
 		} finally {
 			// Closing resources
-			try {
-				if (br != null) {
-					br.close();
-				}
-				if (fr != null) {
-					fr.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			closeResources(br, fr);
 		}
 		
 		return distances;
+	}
+
+	public static void closeResources(BufferedReader br, FileReader fr) {
+		try {
+			if (br != null) {
+				br.close();
+			}
+			if (fr != null) {
+				fr.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
