@@ -74,8 +74,8 @@ public class heuristicShortestPath {
 			Vertex selectedNode = selectNodeWithShortestDistance(neighbors, blackList, history);
 
 			// If we are not in a backtrack cycle, print adjacent nodes
-			Utilities.printCurrentNode(currentNode, isBacktrackCycle);
-			Utilities.printAdjacentNodes(neighbors, blackList, history, isBacktrackCycle);
+			PrintUtilities.printCurrentNode(currentNode, isBacktrackCycle);
+			PrintUtilities.printAdjacentNodes(neighbors, history, isBacktrackCycle);
 
 			/*
 			 * If selectedNode is not null, currentNode = selectedNode;
@@ -95,15 +95,15 @@ public class heuristicShortestPath {
 			// Separate logic depending on whether we are in a backtrack cycle
 			if (isBacktrackCycle == true) {
 				isBacktrackCycle = false;						// Reset flag
-				Utilities.printEndings(currentNode, history);
+				PrintUtilities.printEndings(currentNode, history);
 			} else if (selectedNode == null) {    // This means we hit a dead end and weren't able to move on
 				history.remove(currentNode);	  // Remove the currentNode from the history
-				Utilities.printBacktrack(history);
+				PrintUtilities.printBacktrack(history);
 				currentNode = history.get(history.size() - 2);
 				blackList.add(history.remove(history.size() - 1));        // Make sure we can't do this again.
 				isBacktrackCycle = true;
 			} else {
-				Utilities.printEndings(currentNode, history);
+				PrintUtilities.printEndings(currentNode, history);
 			}
 		}
 	}
@@ -122,11 +122,11 @@ public class heuristicShortestPath {
 														List<Vertex> history) {
 		Vertex shortestDistance = null;
 		for (int i = 0; i < list.size(); i++) {
-			if (!Utilities.nodeIsInList(blackList, list.get(i)) && !Utilities.nodeIsInList(history, list.get(i))) {
+			if (!nodeIsInList(blackList, list.get(i)) && !nodeIsInList(history, list.get(i))) {
 				if (shortestDistance == null) {
 					shortestDistance = list.get(i);
 				} else if (list.get(i).getDirectDistanceToZ() < shortestDistance.getDirectDistanceToZ() &&
-						!Utilities.nodeIsInList(blackList, list.get(i)) && !Utilities.nodeIsInList(history, list.get(i))) {
+						!nodeIsInList(blackList, list.get(i)) && !nodeIsInList(history, list.get(i))) {
 					shortestDistance = list.get(i);
 				}
 			}
@@ -141,8 +141,8 @@ public class heuristicShortestPath {
 		Vertex lowestCombinedWeightVertex = null;
 
 		for (int i = 0; i < list.size(); i++) {
-			if (!Utilities.nodeIsInList(blackList, list.get(i)) &&
-					!Utilities.nodeIsInList(history, list.get(i))) {
+			if (!nodeIsInList(blackList, list.get(i)) &&
+					!nodeIsInList(history, list.get(i))) {
 
 				int currentWeight = list.get(i).getCombinedWeight(currentNode);
 
@@ -184,8 +184,8 @@ public class heuristicShortestPath {
 			Vertex selectedNode = selectNodeWithSmallestCombinedWeight(neighbors, blackList, history, currentNode);
 
 			// If we are not in a backtrack cycle, print adjacent nodes
-			Utilities.printCurrentNode(currentNode, isBacktrackCycle);
-			Utilities.printAdjacentNodes(neighbors, blackList, history, isBacktrackCycle, currentNode);
+			PrintUtilities.printCurrentNode(currentNode, isBacktrackCycle);
+			PrintUtilities.printAdjacentNodes(neighbors, history, isBacktrackCycle, currentNode);
 
 			/*
 			 * If selectedNode is not null, currentNode = selectedNode;
@@ -205,15 +205,15 @@ public class heuristicShortestPath {
 			// Separate logic depending on whether we are in a backtrack cycle
 			if (isBacktrackCycle == true) {
 				isBacktrackCycle = false;						// Reset flag
-				Utilities.printEndings(currentNode, history);
+				PrintUtilities.printEndings(currentNode, history);
 			} else if (selectedNode == null) {    // This means we hit a dead end and weren't able to move on
 				history.remove(currentNode);	  // Remove the currentNode from the history
-				Utilities.printBacktrack(history);
+				PrintUtilities.printBacktrack(history);
 				currentNode = history.get(history.size() - 2);
 				blackList.add(history.remove(history.size() - 1));        // Make sure we can't do this again.
 				isBacktrackCycle = true;
 			} else {
-				Utilities.printEndings(currentNode, history);
+				PrintUtilities.printEndings(currentNode, history);
 			}
 		}
 	}
@@ -364,5 +364,20 @@ public class heuristicShortestPath {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Searches a list for a specific node
+	 * @param list - the list to search
+	 * @param node - the node to find
+	 * @return - true if we find the node. False if we don't find it.
+	 */
+	public static boolean nodeIsInList(List<Vertex> list, Vertex node) {
+		for (Vertex v : list) {
+			if (v.equals(node)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
