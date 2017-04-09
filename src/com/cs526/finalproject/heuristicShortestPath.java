@@ -14,14 +14,13 @@ import java.util.Map;
  *
  */
 public class heuristicShortestPath {
-	private static final Vertex END_NODE = new Vertex("Z"); 	// End node is hardcoded								
+	protected static final Vertex END_NODE = new Vertex("Z"); 	// End node is hardcoded
 	
 	private static Map<String, Integer> directDistances = new HashMap<>();	// Holds direct distances
 	private static AdjacencyList graph = new AdjacencyList();				// Main graph data structure
 	private static String startNode = "G";									// Start node passed in as arg
 	
 	public static void main(String[] args) {
-
 		// Path set by passing in a command line arg of the path.
 		if (args.length < 1) {
 			System.out.print("Please enter the path to the input file.");
@@ -31,16 +30,16 @@ public class heuristicShortestPath {
 			graph = readGraphFromFile(args[0]);
 		}
 
-		directDistances = readDirectDistancesFromFile();				// Path hardcoded to direct_distance.txt
+		directDistances = readDirectDistancesFromFile();		// Path hardcoded to direct_distance.txt
 
 		// Set the edge weights for the graph from directDistances
 		setEdgeWeights(graph, directDistances);
 
 		// Run algorithm one
-		algorithmOne(startNode);
+//		algorithmOne(startNode);
 		
 		// Run algorithm two
-//		algorithmTwo(graph);
+		algorithmTwo(startNode);
 	}
 	
 	/**
@@ -69,22 +68,14 @@ public class heuristicShortestPath {
 		 *	We loop this code until we hit the end node
 		 */
 		while (!currentNode.equals(END_NODE)) {		// Until we find the END_NODE
-
 			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
-			Vertex prevNode = currentNode;						// Save previous node for later comparison
 
 			// Select the node with the shortest distance
 			Vertex selectedNode = selectNodeWithShortestDistance(neighbors, blackList, history);
 
-			/* If we are not in a backtrack cycle, print adjacent nodes
-			 * This is to match the output given in the description.
-			 */
-			if (isBacktrackCycle == false) {
-				// Print statements
-				System.out.println("\tCurrent Node = " + currentNode.getName());
-				Utilities.printAdjacentNodes(neighbors, blackList, history);
-			}
-
+			// If we are not in a backtrack cycle, print adjacent nodes
+			Utilities.printCurrentNode(currentNode, isBacktrackCycle);
+			Utilities.printAdjacentNodes(neighbors, blackList, history, isBacktrackCycle);
 
 			/*
 			 * If selectedNode is not null, currentNode = selectedNode;
@@ -94,41 +85,25 @@ public class heuristicShortestPath {
 			if (selectedNode != null) {
 				if (selectedNode.equals(END_NODE)) {
 					System.out.println("\tZ is the destination node. Stop.");
-					currentNode = END_NODE;
-				} else {
-					currentNode = selectedNode;
 				}
+				currentNode = selectedNode;
 			}
 
-			history.add(currentNode);							// Add node to the history list
+			// Add node to the history list
+			history.add(currentNode);
 
 			// Separate logic depending on whether we are in a backtrack cycle
 			if (isBacktrackCycle == true) {
 				isBacktrackCycle = false;						// Reset flag
-
-				// Logic for whether we are at the end or not.
-				if (currentNode.equals(END_NODE)) {
-					Utilities.printPath(history);
-					Utilities.printPathLength(history);
-				} else {
-					Utilities.printSectionEnd(history, currentNode);
-					System.out.println("");
-				}
+				Utilities.printEndings(currentNode, history);
+			} else if (selectedNode == null) {    // This means we hit a dead end and weren't able to move on
+				history.remove(currentNode);	  // Remove the currentNode from the history
+				Utilities.printBacktrack(history);
+				currentNode = history.get(history.size() - 2);
+				blackList.add(history.remove(history.size() - 1));        // Make sure we can't do this again.
+				isBacktrackCycle = true;
 			} else {
-				if (currentNode.equals(prevNode)) {    // This means we hit a dead end and weren't able to move on
-					history.remove(currentNode);
-					System.out.println("\tDead end.");
-					System.out.println("\tBacktrack to " + history.get(history.size() - 2).getName());
-					currentNode = history.get(history.size() - 2);
-					blackList.add(history.remove(history.size() - 1));        // Make sure we can't do this again.
-					isBacktrackCycle = true;
-				} else if (currentNode.equals(END_NODE)) {
-					// Print either the end of the section or end of the algorithm info
-					Utilities.printPath(history);
-					Utilities.printPathLength(history);
-				} else {    // We haven't reached the end yet
-					Utilities.printSectionEnd(history, currentNode);
-				}
+				Utilities.printEndings(currentNode, history);
 			}
 		}
 	}
@@ -159,12 +134,88 @@ public class heuristicShortestPath {
 		return shortestDistance;
 	}
 
+	public static Vertex selectNodeWithSmallestCombinedWeight(List<Vertex> list,
+															  List<Vertex> blackList,
+															  List<Vertex> history,
+															  Vertex currentNode) {
+		Vertex lowestCombinedWeightVertex = null;
+
+		for (int i = 0; i < list.size(); i++) {
+			if (!Utilities.nodeIsInList(blackList, list.get(i)) &&
+					!Utilities.nodeIsInList(history, list.get(i))) {
+
+				int currentWeight = list.get(i).getCombinedWeight(currentNode);
+
+				if (lowestCombinedWeightVertex == null) {
+					lowestCombinedWeightVertex = list.get(i);
+				} else if (currentWeight < lowestCombinedWeightVertex.getCombinedWeight(currentNode)) {
+					lowestCombinedWeightVertex = list.get(i);
+				}
+			}
+		}
+		return lowestCombinedWeightVertex;
+	}
+
 	/**
 	 * Algorithm 2: Among all nodes v that are adjacent to the node n, choose the one for
 	 * which w(n, v) + dd(v) is the smallest.
 	 */
-	public static void algorithmTwo() {
+	public static void algorithmTwo(String start) {
+		Vertex currentNode = graph.findVertex(start); 		// Save start Node as currentNode
+		List<Vertex> history = new ArrayList<>(); 			// Path history
+		List<Vertex> neighbors;								// Neighbors List
+		List<Vertex> blackList = new ArrayList<>();			// List of nodes we backtrack from
+		boolean isBacktrackCycle = false;					// flag to know if this is a backtrack cycle
 
+		// Print title for algorithm 1
+		System.out.println("Algorithm 2:\n");
+
+		// Add the start node to the history list;
+		history.add(currentNode);
+
+		/*
+		 *	Find the neighbor with the shortest distance to Z
+		 *	We loop this code until we hit the end node
+		 */
+		while (!currentNode.equals(END_NODE)) {		// Until we find the END_NODE
+			neighbors = graph.getAdjacentNodes(currentNode);	// Get neighbors of current node
+
+			// Select the node with the shortest distance
+			Vertex selectedNode = selectNodeWithSmallestCombinedWeight(neighbors, blackList, history, currentNode);
+
+			// If we are not in a backtrack cycle, print adjacent nodes
+			Utilities.printCurrentNode(currentNode, isBacktrackCycle);
+			Utilities.printAdjacentNodes(neighbors, blackList, history, isBacktrackCycle, currentNode);
+
+			/*
+			 * If selectedNode is not null, currentNode = selectedNode;
+			 * If the selectedNode is null, that means we will not update
+			 * the current node.
+			 */
+			if (selectedNode != null) {
+				if (selectedNode.equals(END_NODE)) {
+					System.out.println("\tZ is the destination node. Stop.");
+				}
+				currentNode = selectedNode;
+			}
+
+			// Add node to the history list
+			history.add(currentNode);
+
+			// Separate logic depending on whether we are in a backtrack cycle
+			if (isBacktrackCycle == true) {
+				isBacktrackCycle = false;						// Reset flag
+				Utilities.printEndings(currentNode, history);
+			} else if (selectedNode == null) {    // This means we hit a dead end and weren't able to move on
+				history.remove(currentNode);	  // Remove the currentNode from the history
+				Utilities.printBacktrack(history);
+				currentNode = history.get(history.size() - 2);
+				blackList.add(history.remove(history.size() - 1));        // Make sure we can't do this again.
+				isBacktrackCycle = true;
+			} else {
+				Utilities.printEndings(currentNode, history);
+			}
+		}
 	}
 
 	/**
@@ -225,7 +276,7 @@ public class heuristicShortestPath {
 			 *  using an ArrayList<String[]> for ease of handling
 			 */
 			while ((currentLine = br.readLine()) != null) {
-				dataStore.add((String[])currentLine.split("\\s+"));
+				dataStore.add(currentLine.split("\\s+"));
 			}
 			
 		} catch (IOException e) {

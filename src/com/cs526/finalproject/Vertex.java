@@ -70,6 +70,20 @@ public class Vertex {
 		}
 		return null;
 	}
+
+	public Edge findEdgeWithLowestWeight() {
+		Edge lowestWeight = edges.get(0);
+		for (int i = 1; i < edges.size(); i++) {
+			if (edges.get(i).getWeight() < lowestWeight.getWeight()) {
+				lowestWeight = edges.get(i);
+			}
+		}
+		return lowestWeight;
+	}
+
+	public int getCombinedWeight(Vertex endNode) {
+		return getDirectDistanceToZ() + endNode.findEdge(name).getWeight();
+	}
 	
 	/**
 	 * Overrides the standard equals method defining
