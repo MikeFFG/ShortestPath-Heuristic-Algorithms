@@ -83,9 +83,4 @@ public class Vertex {
 		}
 		return false;
 	}
-
-	public boolean removeNeighbor(Vertex neighbor) {
-		return edges.removeIf(e -> e.getEnd().equals(neighbor.getName()));
-	}
-	
 }

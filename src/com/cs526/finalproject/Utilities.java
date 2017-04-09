@@ -6,40 +6,66 @@ import java.util.List;
  * Created by mburke on 4/8/17.
  */
 public class Utilities {
+
+    /**
+     * Searches a list for a specific node
+     * @param list - the list to search
+     * @param node - the node to find
+     * @return - true if we find the node. False if we don't find it.
+     */
+    public static boolean nodeIsInList(List<Vertex> list, Vertex node) {
+        for (Vertex v : list) {
+            if (v.equals(node)) {
+                return true;
+            }
+        }
+        return false;
+    }
     /* Printing utilities */
     /**
      * Prints the output of a node for the DD algorithm
      * @param v - the node to print
      */
-    public static void printSingleNodeDD(Vertex v) {
-        System.out.println("\t" + v.getName() + ": dd(" +
-                v.getName() + ") = " +
-                v.getDirectDistanceToZ()
-        );
+    public static StringBuilder getSingleNodeDDString(Vertex v,
+                                                      List<Vertex> blackList,
+                                                      List<Vertex> history) {
+        StringBuilder output = new StringBuilder();
+        if (nodeIsInList(history, v)) {
+            output.append("\n\t").append(v.getName()).append(" is already in the path.");
+        } else {
+            return output.append("\n\t").append(v.getName()).
+                    append(": dd(").append(v.getName()).
+                    append(") = ").append(v.getDirectDistanceToZ());
+        }
+        return output;
     }
 
     /**
      * Prints a list of nodes.
      * @param neighbors - the list of neighbors to print
      */
-    public static void printAdjacentNodes(List<Vertex> neighbors) {
+    public static void printAdjacentNodes(List<Vertex> neighbors,
+                                          List<Vertex> blackList,
+                                          List<Vertex> history) {
         System.out.print("\tAdjacent nodes: ");
+        StringBuilder output = new StringBuilder();
+
         for (int i = 0; i < neighbors.size(); i++ ) {
             if (i == neighbors.size() - 1) {
                 System.out.print(neighbors.get(i).getName());
+                output.append(getSingleNodeDDString(neighbors.get(i), blackList, history));
             } else {
                 System.out.print(neighbors.get(i).getName() + ", ");
+                output.append(getSingleNodeDDString(neighbors.get(i), blackList, history));
             }
         }
-        System.out.println("");
+        System.out.println(output);
     }
 
     public static void printSectionEnd(List<Vertex> history, Vertex currentNode) {
         System.out.println("\t" + currentNode.getName() + " is selected");
-        System.out.println("\tShortest path: " +
-                history.get(history.size() - 1).getName() +
-                " → " + currentNode.getName());
-        System.out.println("");
+        printPath(history);
+        System.out.println("\n");
     }
 
     public static void printPath(List<Vertex> history) {
