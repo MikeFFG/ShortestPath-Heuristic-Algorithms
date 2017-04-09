@@ -126,7 +126,7 @@ public class Utilities {
     }
 
     public static void printSectionEnd(List<Vertex> history, Vertex currentNode) {
-        System.out.println("\t" + currentNode.getName() + " is selected");
+        System.out.println("\tNode " + currentNode.getName() + " is selected");
         printPath(history);
         System.out.println("\n");
     }
@@ -152,7 +152,7 @@ public class Utilities {
                 System.out.print(" + ");
             }
         }
-        System.out.print(" = " + total);
+        System.out.println(" = " + total + "\n");
     }
 
     public static void printPathLengthWDD(List<Vertex> history) {

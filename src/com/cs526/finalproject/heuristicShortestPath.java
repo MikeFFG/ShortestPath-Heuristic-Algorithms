@@ -36,7 +36,7 @@ public class heuristicShortestPath {
 		setEdgeWeights(graph, directDistances);
 
 		// Run algorithm one
-//		algorithmOne(startNode);
+		algorithmOne(startNode);
 		
 		// Run algorithm two
 		algorithmTwo(startNode);
